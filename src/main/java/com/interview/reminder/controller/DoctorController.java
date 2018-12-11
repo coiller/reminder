@@ -1,23 +1,16 @@
 package com.interview.reminder.controller;
 
+import com.interview.reminder.model.Doctor;
+import com.interview.reminder.model.Pair;
+import com.interview.reminder.model.Reminder;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.interview.reminder.model.Doctor;
-import com.interview.reminder.model.Pair;
-import com.interview.reminder.model.Reminder;
 
 @RestController
 @RequestMapping("/api/doctor") // This means URL's start with /doctor
@@ -46,7 +39,7 @@ public class DoctorController extends BaseController {
 
 	@PostMapping("/reminder")
 	public @ResponseBody void newReminder(@RequestBody Map<String, Object> body, HttpServletResponse res) {
-		Pair pair = pairRepository.findById(UUID.fromString((String) body.get("pair_id"))).orElse(null);
+		Pair pair = pairRepository.findOne(UUID.fromString((String) body.get("pair_id")));
 		if (pair == null) {
 			res.setStatus(404);
 			return;

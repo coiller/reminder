@@ -1,21 +1,13 @@
 package com.interview.reminder.controller;
 
+import com.interview.reminder.model.Patient;
+import com.interview.reminder.model.Reminder;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.interview.reminder.model.Patient;
-import com.interview.reminder.model.Reminder;
 
 @RestController
 @RequestMapping("/api/patient") // This means URL's start with /patient
@@ -39,7 +31,7 @@ public class PatientController extends BaseController {
 	@PutMapping("/reminder")
 	public void markFinished(@RequestBody Map<String, UUID> body, HttpServletResponse res) {
 		UUID reminder_id = body.get("reminder_id");
-		Reminder reminder = reminderRepository.findById(reminder_id).orElse(null);
+		Reminder reminder = reminderRepository.findOne(reminder_id);
 		if (reminder == null) {// no such reminder
 			res.setStatus(404);
 			return;
