@@ -12,13 +12,15 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
+import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler","password","username"})
+//@Data
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler","password","username"})
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Account implements Serializable {
 	/**
@@ -61,6 +63,12 @@ public class Account implements Serializable {
 		super();
 		this.username = username;
 		this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+	}
+
+	public Account(String username, String password, Type type) {
+		this.username = username;
+		this.password = password;
+		this.type = type;
 	}
 
 	public UUID getAccount_id() {

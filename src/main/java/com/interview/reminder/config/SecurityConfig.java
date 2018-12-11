@@ -26,7 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable().authorizeRequests().antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-				.antMatchers("/api/login").permitAll()
+				.antMatchers("/api/login","/api/sign-up").permitAll()
 				.antMatchers("/api/config", "/api/doctor/create", "/api/patient/create", "/api/pair/create")
 				.hasRole("ADMIN").antMatchers("/api/doctor/**").hasRole("DOCTOR").antMatchers("/api/patient/**")
 				.hasRole("PATIENT").anyRequest().authenticated().and().httpBasic().realmName("Reminder")
