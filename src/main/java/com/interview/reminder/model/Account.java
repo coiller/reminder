@@ -15,7 +15,10 @@ import javax.persistence.InheritanceType;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler","password","username"})
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Account implements Serializable {
 	/**
@@ -24,7 +27,7 @@ public class Account implements Serializable {
 	private static final long serialVersionUID = 2778332461094730876L;
 
 	public enum Type {
-		doctor, patient;
+		DOCTOR, PATIENT,ADMIN;
 	}
 
 	// for security
@@ -43,8 +46,8 @@ public class Account implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private Type type;
 
-	public Type getType() {
-		return type;
+	public String getType() {
+		return type.name();
 	}
 
 	public void setType(Type type) {

@@ -1,11 +1,6 @@
 package com.interview.reminder.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
 
 @Entity
 public class Doctor extends Account {
@@ -14,24 +9,23 @@ public class Doctor extends Account {
 	 * 
 	 */
 	private static final long serialVersionUID = -5565672523649886938L;
-	@OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY)
-	private Set<Pair> doctor_patients;
+	private String name;
 
 	public Doctor() {
 	}
 
-	public Doctor(String username, String password) {
+	public Doctor(String username, String password,String name) {
 		super(username, password);
-		this.setType(Type.doctor);
-		doctor_patients = new HashSet<>();
+		this.setName(name);
+		this.setType(Type.DOCTOR);
 	}
 
-	public Set<Pair> getPatients() {
-		return doctor_patients;
+	public String getName() {
+		return name;
 	}
 
-	public void setPatients(Set<Pair> doctor_patients) {
-		this.doctor_patients = doctor_patients;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

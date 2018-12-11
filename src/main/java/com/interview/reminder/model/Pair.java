@@ -1,8 +1,6 @@
 package com.interview.reminder.model;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -12,11 +10,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler","doctor"})
 public class Pair implements Serializable {
 
 	/**
@@ -34,20 +34,29 @@ public class Pair implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "doctor_id")
 	private Doctor doctor;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)	
 	@JoinColumn(name = "patient_id")
 	private Patient patient;
-	@OneToMany(mappedBy = "pair", fetch = FetchType.LAZY)
-	private Set<Reminder> reminders;
+//	@OneToMany(mappedBy = "pair", fetch = FetchType.LAZY)
+//	private Set<Reminder> reminders;
 
 	public Pair() {
+	}
+
+	public Pair(UUID pair_id, short unfinished_high, short unfinished_middle, short unfinished_low,Patient patient) {
+		super();
+		this.pair_id = pair_id;
+		this.unfinished_high = unfinished_high;
+		this.unfinished_middle = unfinished_middle;
+		this.unfinished_low = unfinished_low;
+		this.patient=patient;
 	}
 
 	public Pair(Doctor doctor, Patient patient) {
 		super();
 		this.doctor = doctor;
 		this.patient = patient;
-		reminders = new HashSet<>();
+//		reminders = new HashSet<>();
 	}
 
 	public UUID getPair_id() {

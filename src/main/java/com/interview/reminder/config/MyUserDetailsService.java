@@ -22,7 +22,7 @@ public class MyUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Account account = accountRepository.findByUsername(username);
 		// grant authority based on its account type(doctor||patient)
-		GrantedAuthority authority = new SimpleGrantedAuthority(account.getType().name());
+		GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + account.getType());
 		UserDetails userDetails = (UserDetails) new MyUser(account.getUsername(), account.getPassword(),
 				Arrays.asList(authority), account.getAccount_id());
 		return userDetails;

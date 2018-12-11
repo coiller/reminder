@@ -16,7 +16,10 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
+@JsonIgnoreProperties({"pair"})
 public class Reminder implements Serializable {
 	/**
 	 * 
@@ -46,12 +49,13 @@ public class Reminder implements Serializable {
 	public Reminder() {
 	}
 
-	public Reminder(String description, byte duration, String priority, boolean finished) {
+	public Reminder(Pair pair, String description, byte duration, String priority) {
 		super();
+		this.pair = pair;
 		this.description = description;
 		this.duration = duration;
 		this.priority = Priority.valueOf(priority);
-		this.finished = finished;
+
 	}
 
 	public UUID getReminder_id() {
@@ -78,8 +82,8 @@ public class Reminder implements Serializable {
 		this.duration = duration;
 	}
 
-	public Priority getPriority() {
-		return priority;
+	public String getPriority() {
+		return priority.name();
 	}
 
 	public void setPriority(Priority priority) {
