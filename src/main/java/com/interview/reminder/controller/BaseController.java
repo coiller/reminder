@@ -1,6 +1,7 @@
 package com.interview.reminder.controller;
 
 import com.interview.reminder.config.MyUser;
+import com.interview.reminder.model.Log;
 import com.interview.reminder.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -24,6 +25,8 @@ public class BaseController {
 	protected PairRepository pairRepository;
 	@Autowired
 	protected ReminderRepository reminderRepository;
+	@Autowired
+	protected LogRepository logRepository;
 
 	protected MyUser getUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -46,6 +49,9 @@ public class BaseController {
 		}
 	}
 
+	protected void log(String action, String asset) {
+		logRepository.save(new Log(action, asset));
+	}
 	protected Timestamp now() {
 		return new Timestamp(System.currentTimeMillis());
 	}

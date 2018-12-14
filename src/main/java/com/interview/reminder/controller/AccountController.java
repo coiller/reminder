@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,7 +33,10 @@ public class AccountController extends BaseController {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(account.getUsername(), account.getPassword()));
             HashMap<String, String> map = new HashMap<>();
-            map.put("token", jwtTokenProvider.createToken(account.getUsername(), userRepository.findByUsername(account.getUsername()).getType()));
+            String token = jwtTokenProvider.createToken(account.getUsername(), userRepository.findByUsername(account.getUsername()).getType());
+            map.put("token", token);
+            SecurityContextHolder.getContext().setAuthentication(jwtTokenProvider.getAuthentication(token));
+            log("LOGIN", null);
             return map;
         } catch (AuthenticationException e) {
             throw new CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
@@ -45,7 +49,10 @@ public class AccountController extends BaseController {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepository.save(user);
             HashMap<String, String> map = new HashMap<>();
-            map.put("token", jwtTokenProvider.createToken(user.getUsername(), user.getType()));
+            String token = jwtTokenProvider.createToken(user.getUsername(), user.getType());
+            map.put("token", token);
+            SecurityContextHolder.getContext().setAuthentication(jwtTokenProvider.getAuthentication(token));
+            log("SIGNUP", null);
             return map;
         } else {
             throw new CustomException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
