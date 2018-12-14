@@ -3,8 +3,10 @@ package com.interview.reminder.controller;
 import com.interview.reminder.config.JwtTokenProvider;
 import com.interview.reminder.exception.CustomException;
 import com.interview.reminder.model.Account;
+import com.interview.reminder.model.Log;
 import com.interview.reminder.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,20 +29,32 @@ public class AccountController extends BaseController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private AccountRepository userRepository;
-
+    @Value("${security.jwt.validityInMilliseconds}")
+    private long validityInMilliseconds;
     @PostMapping("/api/login")
     public Object login(@RequestBody Account account) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(account.getUsername(), account.getPassword()));
-            HashMap<String, String> map = new HashMap<>();
             String token = jwtTokenProvider.createToken(account.getUsername(), userRepository.findByUsername(account.getUsername()).getType());
-            map.put("token", token);
             SecurityContextHolder.getContext().setAuthentication(jwtTokenProvider.getAuthentication(token));
+            Log last = logRepository.findFirstByActionAndCreatedByOrderByModifiedAtDesc("LOGIN", getUser().getAccount_id());
+            if (last != null && last.getAsset() == null) {
+                throw new CustomException("This account has already login", HttpStatus.UNPROCESSABLE_ENTITY);
+            }
+            HashMap<String, String> map = new HashMap<>();
+            map.put("token", token);
             log("LOGIN", null);
             return map;
         } catch (AuthenticationException e) {
             throw new CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
         }
+    }
+
+    @PostMapping("/api/logout")
+    public void logout() {
+        Log last = logRepository.findFirstByActionAndCreatedByOrderByModifiedAtDesc("LOGIN", getUser().getAccount_id());
+        last.setAsset("LOGOUT");
+        logRepository.save(last);
     }
 
     @PostMapping("/api/sign-up")

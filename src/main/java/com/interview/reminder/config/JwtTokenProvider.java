@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Base64;
+import java.security.Key;
 import java.util.Date;
 
 @Component
@@ -24,14 +25,13 @@ public class JwtTokenProvider {
 
     @Autowired
     private MyUserDetailsService myUserDetails;
-    @Value("secret-key")
-    private String secretKey;
-    @Value("1800000")
-    private long validityInMilliseconds = 1800000; // 30min
+    private Key secretKey;
+    @Value("${security.jwt.validityInMilliseconds}")
+    private long validityInMilliseconds; // 30min
 
     @PostConstruct
     protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+        secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
     public String createToken(String username, String roles) {
@@ -46,7 +46,7 @@ public class JwtTokenProvider {
                 .setClaims(claims)//
                 .setIssuedAt(now)//
                 .setExpiration(validity)//
-                .signWith(SignatureAlgorithm.HS256, secretKey)//
+                .signWith(secretKey)//
                 .compact();
     }
 
