@@ -2,6 +2,7 @@ package com.interview.reminder.controller;
 
 import com.interview.reminder.model.Doctor;
 import com.interview.reminder.model.Pair;
+import com.interview.reminder.model.Profile;
 import com.interview.reminder.model.Reminder;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,15 +16,30 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/doctor") // This means URL's start with /doctor
 public class DoctorController extends BaseController {
+    private Doctor cur() {
+        Doctor doctor = doctorRepository.findByUsername(getUser().getUsername());
+        doctor.setPassword(null);
+        return doctor;
+    }
 
 	@PostMapping("/create")
 	public @ResponseBody Doctor addNewDoctor(@RequestBody Map<String, String> body) {
-		// @ResponseBody means the returned doctor is the response, not a view name
-		// @RequestParam means it is a parameter from the GET or POST request
 		Doctor doctor = new Doctor(body.get("username"), body.get("password"), body.get("username"));
 		doctorRepository.save(doctor);
 		return doctor;
 	}
+
+    @GetMapping("/profile")
+    public Doctor getProfile() {
+        return cur();
+    }
+
+    @PostMapping("/profile")
+    public void setProfile(Profile profile) {
+        Doctor doctor = doctorRepository.findByUsername(getUser().getUsername());
+        doctor.setProfile(profile);
+        doctorRepository.save(doctor);
+    }
 
 	@GetMapping("/reminder_list")
 	public @ResponseBody List<Pair> getPatients() {

@@ -1,36 +1,54 @@
 package com.interview.reminder.controller;
 
+import com.interview.reminder.config.JwtTokenProvider;
+import com.interview.reminder.exception.CustomException;
 import com.interview.reminder.model.Account;
-import org.springframework.security.crypto.bcrypt.BCrypt;
+import com.interview.reminder.repository.AccountRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 public class AccountController extends BaseController {
-	@PostMapping("/api/login")
-	public @ResponseBody Account login(@RequestBody Map<String, String> body) {
-		Account account = accountRepository.findByUsername(body.get("username"));
-		if (BCrypt.checkpw(body.get("password"), account.getPassword())) {
-			return account;
-		}
-		return null;
-	}
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AccountRepository userRepository;
 
-	@PostMapping("/api/sign-up")
-	public void signUp(@RequestBody Account account, HttpServletResponse response){
-		Boolean exist= accountRepository.countByUsername(account.getUsername())!=0;
-		if (exist){
-			response.setStatus(400);
-			return;
-		}else {
-			accountRepository.save(account);
-			response.setStatus(200);
-			return;
-		}
-	}
+    @PostMapping("/api/login")
+    public Object login(@RequestBody Account account) {
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(account.getUsername(), account.getPassword()));
+            HashMap<String, String> map = new HashMap<>();
+            map.put("token", jwtTokenProvider.createToken(account.getUsername(), userRepository.findByUsername(account.getUsername()).getType()));
+            return map;
+        } catch (AuthenticationException e) {
+            throw new CustomException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+    }
+
+    @PostMapping("/api/sign-up")
+    public Object signUp(@RequestBody Account user) {
+        if (userRepository.countByUsername(user.getUsername()) == 0) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+            HashMap<String, String> map = new HashMap<>();
+            map.put("token", jwtTokenProvider.createToken(user.getUsername(), user.getType()));
+            return map;
+        } else {
+            throw new CustomException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+    }
 }

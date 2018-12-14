@@ -1,25 +1,14 @@
 package com.interview.reminder.model;
 
+import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-
-import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 @Entity
-//@Data
+@Data
 //@JsonIgnoreProperties({"hibernateLazyInitializer", "handler","password","username"})
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Account implements Serializable {
@@ -62,7 +51,7 @@ public class Account implements Serializable {
 	public Account(String username, String password) {
 		super();
 		this.username = username;
-		this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+		this.password = password;
 	}
 
 	public Account(String username, String password, Type type) {
@@ -70,28 +59,28 @@ public class Account implements Serializable {
 		this.password = password;
 		this.type = type;
 	}
-
-	public UUID getAccount_id() {
-		return account_id;
-	}
-
-	public void setAccount_id(UUID account_id) {
-		this.account_id = account_id;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = BCrypt.hashpw(password, BCrypt.gensalt());
-	}
+//
+//	public UUID getAccount_id() {
+//		return account_id;
+//	}
+//
+//	public void setAccount_id(UUID account_id) {
+//		this.account_id = account_id;
+//	}
+//
+//	public String getUsername() {
+//		return username;
+//	}
+//
+//	public void setUsername(String username) {
+//		this.username = username;
+//	}
+//
+//	public String getPassword() {
+//		return password;
+//	}
+//
+//	public void setPassword(String password) {
+//		this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+//	}
 }

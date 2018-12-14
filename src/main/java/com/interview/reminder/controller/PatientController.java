@@ -1,6 +1,7 @@
 package com.interview.reminder.controller;
 
 import com.interview.reminder.model.Patient;
+import com.interview.reminder.model.Profile;
 import com.interview.reminder.model.Reminder;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +13,25 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/patient") // This means URL's start with /patient
 public class PatientController extends BaseController {
+
+	private Patient cur() {
+		Patient patient = patientRepository.findByUsername(getUser().getUsername());
+		patient.setPassword(null);
+		return patient;
+	}
+
+	@GetMapping("/profile")
+	public Patient getProfile() {
+		return cur();
+	}
+
+	@PostMapping("/profile")
+	public void setProfile(Profile profile) {
+		Patient patient = patientRepository.findByUsername(getUser().getUsername());
+		patient.setProfile(profile);
+		patientRepository.save(patient);
+	}
+
 
 	@PostMapping("/create")
 	public @ResponseBody Patient addNewPatient(@RequestBody Map<String, String> body) {

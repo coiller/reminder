@@ -26,12 +26,18 @@ public class Doctor extends Account {
         this.setType(Type.DOCTOR);
     }
 
-    public String getName() {
-        return name;
+    public void setProfile(Profile profile) {
+        this.email = profile.getEmail();
+        this.name = profile.getName();
+        this.title = profile.getTitle();
+        this.phone = profile.getPhone();
     }
 
-    public void setName(String name) {
+    public Doctor(String name, String email, String phone, String title) {
         this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.title = title;
     }
 
 }

@@ -27,11 +27,11 @@ public class Patient extends Account {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setProfile(Profile profile) {
+        this.address = profile.getAddress();
+        this.dob = profile.getDob();
+        this.email = profile.getEmail();
+        this.name = profile.getName();
+        this.phone = profile.getPhone();
     }
 }
