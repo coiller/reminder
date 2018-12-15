@@ -29,16 +29,15 @@ public class DoctorController extends BaseController {
 		return doctor;
 	}
 
+    @PostMapping("/reminder_list/history_reminder")
+    public @ResponseBody
+    List<Map<Date, Integer>> getHistory(@RequestBody Map<String, String> body) {
+        return reminderRepository.findHistoryReminders(UUID.fromString(body.get("pair_id")));
+    }
+
     @GetMapping("/profile")
     public Doctor getProfile() {
         return cur();
-    }
-
-    @PostMapping("/profile")
-    public void setProfile(Profile profile) {
-        Doctor doctor = doctorRepository.findByUsername(getUser().getUsername());
-        doctor.setProfile(profile);
-        doctorRepository.save(doctor);
     }
 
 	@GetMapping("/reminder_list")
@@ -48,14 +47,9 @@ public class DoctorController extends BaseController {
 		return patients;
 	}
 
-	@PostMapping("/reminder_list/history_reminder")
-	public @ResponseBody List<Map<Date, Integer>> getHistory(@RequestBody Map<String, Object> body) {
-		return reminderRepository.findHistoryReminders(UUID.fromString((String) body.get("pair_id")));
-	}
-
 	@PostMapping("/reminder")
 	public @ResponseBody void newReminder(@RequestBody Map<String, Object> body, HttpServletResponse res) {
-		Pair pair = pairRepository.findOne(UUID.fromString((String) body.get("pair_id")));
+        Pair pair = pairRepository.findById(UUID.fromString((String) body.get("pair_id"))).orElse(null);
 		if (pair == null) {
 			res.setStatus(404);
 			return;
@@ -71,4 +65,11 @@ public class DoctorController extends BaseController {
 		updateReport(pair.getPair_id(), reminder.getPriority(), 1);
 		res.setStatus(200);
 	}
+
+    @PostMapping("/profile")
+    public void setProfile(Profile profile) {
+        Doctor doctor = doctorRepository.findByUsername(getUser().getUsername());
+        doctor.setProfile(profile);
+        doctorRepository.save(doctor);
+    }
 }

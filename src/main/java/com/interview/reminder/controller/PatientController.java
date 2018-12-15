@@ -6,6 +6,7 @@ import com.interview.reminder.model.Reminder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -51,13 +52,13 @@ public class PatientController extends BaseController {
 	@PutMapping("/reminder")
 	public void markFinished(@RequestBody Map<String, UUID> body, HttpServletResponse res) {
 		UUID reminder_id = body.get("reminder_id");
-		Reminder reminder = reminderRepository.findOne(reminder_id);
+		Reminder reminder = reminderRepository.findById(reminder_id).orElse(null);
 		if (reminder == null) {// no such reminder
 			res.setStatus(404);
 			return;
 		}
 		if (reminder.isFinished()
-				|| time(reminder.getStart_time(), reminder.getDuration() * 3600 * 1000L).before(now())) {
+				|| time(new Timestamp(reminder.getStart_time().getTime()), reminder.getDuration() * 3600 * 1000L).before(now())) {
 			// has already finished or past the dead line
 			res.setStatus(406);
 			return;

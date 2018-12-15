@@ -78,10 +78,10 @@ public class ConfigController extends BaseController {
                 }
             }
         }
-        doctorRepository.save(doctors);
-        patientRepository.save(patients);
-        pairRepository.save(pairs);
-        reminderRepository.save(reminders);
+//        doctorRepository.save(doctors);
+//        patientRepository.save(patients);
+//        pairRepository.save(pairs);
+//        reminderRepository.save(reminders);
         return "done!";
     }
 }

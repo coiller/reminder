@@ -4,13 +4,14 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.Optional;
 import java.util.UUID;
 
 
 class SpringSecurityAuditorAware implements AuditorAware<UUID> {
 
     @Override
-    public UUID getCurrentAuditor() {
+    public Optional<UUID> getCurrentAuditor() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -18,6 +19,6 @@ class SpringSecurityAuditorAware implements AuditorAware<UUID> {
             return null;
         }
 
-        return ((MyUser) authentication.getPrincipal()).getAccount_id();
+        return Optional.ofNullable(((MyUser) authentication.getPrincipal()).getAccount_id());
     }
 }

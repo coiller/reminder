@@ -1,22 +1,13 @@
 package com.interview.reminder.model;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.UUID;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.GenericGenerator;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @JsonIgnoreProperties({"pair"})
@@ -41,7 +32,7 @@ public class Reminder implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private Priority priority;
 	private boolean finished;
-	private Timestamp start_time;
+	private Date start_time;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "pair_id")
 	private Pair pair;
@@ -98,7 +89,7 @@ public class Reminder implements Serializable {
 		this.finished = finished;
 	}
 
-	public Timestamp getStart_time() {
+	public Date getStart_time() {
 		return start_time;
 	}
 
